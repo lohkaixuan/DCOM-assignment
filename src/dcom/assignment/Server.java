@@ -14,7 +14,6 @@ import java.rmi.registry.LocateRegistry;
 public class Server extends UnicastRemoteObject implements RMIinterface{
     public Server() throws RemoteException{
         super();
-        qi lpasap
     }
     
     public static void main(String[] args) throws RemoteException {
