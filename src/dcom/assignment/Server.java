@@ -4,7 +4,6 @@
  */
 package dcom.assignment;
 
-import java.rmi.*;
 import java.util.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
