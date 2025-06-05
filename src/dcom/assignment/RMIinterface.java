@@ -11,7 +11,7 @@ package dcom.assignment;
 import java.rmi.*;
 
 public interface RMIinterface extends Remote{
-    public void register(String Firstname,String LastnameString, String ICnumber)throws RemoteException;
+    public String register(String Firstname,String LastnameString, String ICnumber)throws RemoteException;
     
 }   
     

@@ -10,43 +10,37 @@ import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
-public class Server extends UnicastRemoteObject implements RMIinterface{
-    public Server() throws RemoteException{
+public class Server extends UnicastRemoteObject implements RMIinterface {
+    public Server() throws RemoteException {
         super();
     }
-    
+
     public static void main(String[] args) throws RemoteException {
         Registry reg = LocateRegistry.createRegistry(1060);
         reg.rebind("sub", new Server());
-        System.out.println("Server is running on port 1060...");   
+        System.out.println("Server is running on port 1060...");
     }
-    
-    public void register(String Firstname,String Lastname, String ICnumber) {
+
+    public String register(String Firstname, String Lastname, String ICnumber) {
         Neon neon = new Neon();
-        ArrayList<ArrayList<Object>> data = neon.read("employee");
-          boolean exists = false;
-          for (ArrayList<Object> row : data) {
-              // Assuming the first column is the first name
-              if (row.get(0) != null && row.get(0).toString().equalsIgnoreCase(Firstname)) {
-                  exists = true;
-                  break;
-              }
-          }
+        String table = "employee";
+        ArrayList<ArrayList<Object>> data = neon.read(table);
 
-          if (exists) {
-              System.out.println("Registration rejected: First Name '" + Firstname + "' is already used.");
-          } else {
-              System.out.println("Registration complete!");
-              System.out.println("Name: " + Firstname + " " + Lastname);
-              System.out.println("IC Number: " + ICnumber);
-
-              // Now you can add the new data to the database if needed
-              ArrayList<Object> newData = new ArrayList<>();
-              newData.add(Firstname);
-              newData.add(Lastname);
-              newData.add(ICnumber);
-              neon.adddata("employee", newData);
+        for (ArrayList<Object> row : data) {
+            if (row.get(0) != null && row.get(0).toString().equalsIgnoreCase(Firstname)) {
+                return "Registration rejected: First Name '" + Firstname + "' is already used.\n";
+            }
         }
-    }        
+
+        ArrayList<Object> newData = new ArrayList<>(Arrays.asList(Firstname, Lastname, ICnumber));
+        String message = neon.adddata(table , newData);
+        if (message.contains("Inserted ")) {
+            message = "Registration successful!\n" +
+                    "Name: " + Firstname + " " + Lastname + "\n" +
+                    "IC Number: " + ICnumber +"\n";
+        } else {
+            message = "Registration failed! " + message +"\n";
+        }
+        return message;
+    }
 }
-      
