@@ -33,7 +33,7 @@ public class User {
     }
      public void login() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter First Name: ");
+        System.out.print("Enter aowdoaw: ");
         this.Firstname = scanner.nextLine();
         System.out.print("Enter Last Name: ");
         this.Lastname = scanner.nextLine();
