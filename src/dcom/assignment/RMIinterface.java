@@ -12,6 +12,6 @@ import java.rmi.*;
 
 public interface RMIinterface extends Remote{
     public String register(String Firstname,String LastnameString, String ICnumber)throws RemoteException;
-    
+    public String getnetpay(double tax, double hours, double basic) throws RemoteException;
 }   
     

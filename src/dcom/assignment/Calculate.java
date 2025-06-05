@@ -4,7 +4,6 @@
  */
 package dcom.assignment;
 
-import java.util.Scanner;
 
 public class Calculate {
     double netpay, netde, hours, basic, tax, grosspay, deduction;
@@ -21,7 +20,7 @@ public class Calculate {
         this.tax = tax;
     }
 
-    public double getnetpay() {
+    public double getgrosspayy() {
         grosspay = hours * basic;
         return grosspay;
     }
@@ -32,7 +31,6 @@ public class Calculate {
     }
 
     public double netpay() {
-        grosspay = getnetpay();
         netpay = grosspay * (1 - tax);
         return netpay;
     }

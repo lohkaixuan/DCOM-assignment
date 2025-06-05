@@ -23,16 +23,14 @@ public class Client {
 
     public static void menu() throws RemoteException,NotBoundException, MalformedURLException {
         RMIinterface obj = (RMIinterface)Naming.lookup("rmi://localhost:1060/sub");
-
+        String message = "";
         User user = new User();
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
         System.out.println("Welcome to the Employee Management System");
         System.out.println("1. Register");
         System.out.println("2. Login");
-        System.out.println("3. Set Tax");   
-        System.out.println("4. Set Hour");
-        System.out.println("5. Set Basic Salary");
+        System.out.println("3. Set Tax, Hour, and Basic Salary");   
         System.out.println("0. Exit");
         System.out.print("Please select an option: ");
         if (scanner.hasNextInt()) {
@@ -45,21 +43,19 @@ public class Client {
         switch (choice) {
             case 1:
                 user.register();
-                String message = obj.register(user.Firstname, user.Lastname, user.ICnumber);
-                System.out.println(message); // This will print the message returned from the server
+                message = obj.register(user.Firstname, user.Lastname, user.ICnumber);
+                System.out.println(message); 
 
                 break;
             case 2:
                 user.login();
                 break;
             case 3:
-                user.settax();
-                break;
-            case 4:
                 user.sethour();
-                break;
-            case 5:
+                user.settax();
                 user.setbasic();
+                message = obj.getnetpay(user.tax, user.hour, user.basic);
+                System.out.println(message); 
                 break;
             case 0:
                 System.out.println("Exiting the system. Goodbye!");

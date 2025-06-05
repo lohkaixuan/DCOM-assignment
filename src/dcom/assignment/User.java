@@ -16,9 +16,11 @@ public class User {
     String ICnumber;
     String Gmail;
     String Password;
+    double tax;double hour;double basic;
+    
+    private static final Scanner scanner = new Scanner(System.in);
 
     public void register() {
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter First Name: ");
         this.Firstname = scanner.nextLine().trim();
         System.out.print("Enter Last Name: ");
@@ -28,37 +30,31 @@ public class User {
         scanner.close();
     }
 
-    public void login() {
-        Scanner scanner = new Scanner(System.in);
+    public void login() {//qi 
         System.out.print("Enter lol: ");
         this.Firstname = scanner.nextLine();
-
         System.out.println("Log in complete!");
-        scanner.close();
     }
 
     public void settax() {
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter tax: ");
-        Double tax = scanner.nextDouble();
+        this.tax = scanner.nextDouble();
         System.out.println("Tax set to: " + tax);
-        scanner.close();
     }
     
     public void sethour() {
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter hour: ");
-        Double hour = scanner.nextDouble();
+        this.hour = scanner.nextDouble();
         System.out.println("Working set to: " + hour);
-        scanner.close();
     }
     
     public void setbasic() {
-        Scanner scanner = new Scanner(System.in);
         System.out.print("Enter basic: ");
-        Double basic = scanner.nextDouble();
+        this.basic = scanner.nextDouble();
         System.out.println("Basic set to: " + basic);
-        scanner.close();
     }
 
+    public static void closeScanner() {
+        scanner.close();
+    }
 }

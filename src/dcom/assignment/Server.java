@@ -44,4 +44,25 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
         }
         return message;
     }
+
+    public String getnetpay( double tax, double hours, double basic) {
+        Calculate calculate = new Calculate();
+        calculate.sethours(hours);
+        calculate.settax(tax);
+        calculate.setbasic(basic);
+        double grosspay = calculate.getgrosspayy();
+        double deduction = calculate.getdeduction();
+        double netPay = calculate.netpay();
+
+        String message =
+        "\n\n" +
+        "       Pay Slip" + "\n" +
+        "Hours        : " + hours + "hours" + "\n" +
+        "Tax          : " + tax * 100 + " % " + "\n" +
+        "Basic Salary : RM " + String.format("%.2f", basic) + "\n" +
+        "Gross Pay    : RM " + String.format("%.2f", grosspay) + "\n" +
+        "Deduction    : RM " + String.format("%.2f", deduction) + "\n" +
+        "Net Pay      : RM " + String.format("%.2f", netPay) + "\n";
+        return message;
+    }
 }

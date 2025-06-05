@@ -26,7 +26,6 @@ public class Neon {
             String sql = "SELECT * FROM " + table; // Note: validate table name in real usage to avoid SQL injection
             PreparedStatement pstmt = conn.prepareStatement(sql);
             ResultSet rs = pstmt.executeQuery();
-
             ResultSetMetaData meta = rs.getMetaData();
             int colCount = meta.getColumnCount();
 
@@ -37,7 +36,6 @@ public class Neon {
                 }
                 data.add(row);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -45,11 +43,7 @@ public class Neon {
     }
 
     public String adddata(String table, ArrayList<Object> data) {
-        // Expect data to be in order: firstname, lastname, icnumber
-        if (data.size() != 3) {
-            System.out.println("Data count does not match required columns (firstname, lastname, icnumber)!");
-            return "Data count does not match required columns!";
-        }
+        
         try (Connection conn = connect()) {
             String sql = "INSERT INTO " + table + " (firstname, lastname, icnumber) VALUES (?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
