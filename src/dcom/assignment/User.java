@@ -20,15 +20,11 @@ public class User {
     public void register() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter First Name: ");
-        this.Firstname = scanner.nextLine();
+        this.Firstname = scanner.nextLine().trim();
         System.out.print("Enter Last Name: ");
-        this.Lastname = scanner.nextLine();
+        this.Lastname = scanner.nextLine().trim();
         System.out.print("Enter IC Number: ");
-        this.ICnumber = scanner.nextLine();
-
-        System.out.println("Registration complete!");
-        System.out.println("Name: " + Firstname + " " + Lastname);
-        System.out.println("IC Number: " + ICnumber);
+        this.ICnumber = scanner.nextLine().trim();
         scanner.close();
     }
 

@@ -27,19 +27,20 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
         ArrayList<ArrayList<Object>> data = neon.read(table);
 
         for (ArrayList<Object> row : data) {
-            if (row.get(0) != null && row.get(0).toString().equalsIgnoreCase(Firstname)) {
-                return "Registration rejected: First Name '" + Firstname + "' is already used.\n";
+            System.out.println(row);
+            if (row.get(0) != null && row.get(1).toString().equalsIgnoreCase(Firstname)) {
+                return "\n\nRegistration rejected: First Name '" + Firstname + "' is already used.\n";
             }
         }
 
         ArrayList<Object> newData = new ArrayList<>(Arrays.asList(Firstname, Lastname, ICnumber));
         String message = neon.adddata(table , newData);
         if (message.contains("Inserted ")) {
-            message = "Registration successful!\n" +
+            message = "\n\nRegistration successful!\n" +
                     "Name: " + Firstname + " " + Lastname + "\n" +
                     "IC Number: " + ICnumber +"\n";
         } else {
-            message = "Registration failed! " + message +"\n";
+            message = "\n\n" + "Registration failed! " + message +"\n";
         }
         return message;
     }
