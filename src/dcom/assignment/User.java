@@ -26,8 +26,15 @@ public class User {
         System.out.print("Enter Last Name: ");
         this.Lastname = scanner.nextLine().trim();
         System.out.print("Enter IC Number: ");
-        this.ICnumber = scanner.nextLine().trim();
-        scanner.close();
+        while (true) {
+            String input = scanner.nextLine().trim();
+            if (input.matches("\\d{12}")) {
+                this.ICnumber = input;
+                break;
+            } else {
+                System.out.print("Invalid IC Number. Please enter exactly 12 digits: ");
+            }
+        }
     }
 
     public void login() {//qi 

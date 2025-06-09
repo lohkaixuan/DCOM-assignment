@@ -65,4 +65,5 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
         "Net Pay      : RM " + String.format("%.2f", netPay) + "\n";
         return message;
     }
+
 }
