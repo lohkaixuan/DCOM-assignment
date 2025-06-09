@@ -17,7 +17,7 @@ public class User {
     String Gmail;
     String Password;
     double tax;double hour;double basic;
-    
+
     private static final Scanner scanner = new Scanner(System.in);
 
     public void register() {
@@ -26,7 +26,7 @@ public class User {
         System.out.print("Enter Last Name: ");
         this.Lastname = scanner.nextLine().trim();
         System.out.print("Enter IC Number: ");
-        while (true) {
+          while (true) {
             String input = scanner.nextLine().trim();
             if (input.matches("\\d{12}")) {
                 this.ICnumber = input;
@@ -36,11 +36,24 @@ public class User {
             }
         }
     }
-
-    public void login() {//qi 
-        System.out.print("Enter lol: ");
-        this.Firstname = scanner.nextLine();
+    
+    public void login() {
+        Scanner scanner = new Scanner(System.in);
+        while(true)
+        {   System.out.println("Please enter your password: ");
+            this.password = scan.nextLine();
+            if (password.matches(regex:"\\d{12}")){
+                if (password == ICnum){
+                    break;
+                } else{
+                    System.out.println("Password invalid");
+                }
+            } else {
+                System.out.println("Invalid validation!");
+            }
+        }
         System.out.println("Log in complete!");
+        scanner.close();
     }
 
     public void settax() {
@@ -60,7 +73,7 @@ public class User {
         this.basic = scanner.nextDouble();
         System.out.println("Basic set to: " + basic);
     }
-
+    
     public static void closeScanner() {
         scanner.close();
     }
