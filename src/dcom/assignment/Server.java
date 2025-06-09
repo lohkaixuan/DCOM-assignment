@@ -49,6 +49,20 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
         return message;
     }
 
+    public String login(String ICnumber) {
+        Neon neon = new Neon();
+        String table = "employee";
+        ArrayList<ArrayList<Object>> data = neon.read(table);
+
+        for (ArrayList<Object> row : data) {
+            System.out.println(row);
+            if (row.get(0) != null && row.get(3).toString().equals(ICnumber)) {
+                return "\n\nLogin success";
+            }
+        }
+        return ("Failed");
+    }
+
     public String getnetpay( double tax, double hours, double basic) {
         Calculate calculate = new Calculate();
         calculate.sethours(hours);
