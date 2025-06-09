@@ -26,7 +26,7 @@ public class User {
         System.out.print("Enter Last Name: ");
         this.Lastname = scanner.nextLine().trim();
         System.out.print("Enter IC Number: ");
-          while (true) {
+        while (true) {
             String input = scanner.nextLine().trim();
             if (input.matches("\\d{12}")) {
                 this.ICnumber = input;
@@ -41,9 +41,9 @@ public class User {
         Scanner scanner = new Scanner(System.in);
         while(true)
         {   System.out.println("Please enter your password: ");
-            this.password = scan.nextLine();
-            if (password.matches(regex:"\\d{12}")){
-                if (password == ICnum){
+            String input = scanner.nextLine();
+            if (input.matches("\\d{12}")){
+                if (input == ICnumber){
                     break;
                 } else{
                     System.out.println("Password invalid");
