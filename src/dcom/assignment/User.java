@@ -14,8 +14,7 @@ public class User {
     String Firstname;
     String Lastname;
     String ICnumber;
-    String Gmail;
-    String Password;
+    String input;
     double tax;double hour;double basic;
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -38,22 +37,16 @@ public class User {
     }
     
     public void login() {
-        Scanner scanner = new Scanner(System.in);
         while(true)
         {   System.out.println("Please enter your password: ");
-            String input = scanner.nextLine();
+            input = scanner.nextLine();
             if (input.matches("\\d{12}")){
-                if (input == ICnumber){
-                    break;
-                } else{
-                    System.out.println("Password invalid");
-                }
+                break;
             } else {
                 System.out.println("Invalid validation!");
             }
         }
         System.out.println("Log in complete!");
-        scanner.close();
     }
 
     public void settax() {

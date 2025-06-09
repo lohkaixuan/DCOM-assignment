@@ -49,6 +49,8 @@ public class Client {
                 break;
             case 2:
                 user.login();
+                message = obj.login(user.input);
+                System.out.println(message); 
                 break;
             case 3:
                 user.sethour();

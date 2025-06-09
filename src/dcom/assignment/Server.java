@@ -53,9 +53,11 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
         Neon neon = new Neon();
         String table = "employee";
         ArrayList<ArrayList<Object>> data = neon.read(table);
+        System.out.println("login data: " );
 
         for (ArrayList<Object> row : data) {
             System.out.println(row);
+            System.out.println(row.get(0) + ", " + row.get(1) + ", " + row.get(2));
             if (row.get(0) != null && row.get(3).toString().equals(ICnumber)) {
                 return "\n\nLogin success";
             }
