@@ -15,7 +15,7 @@ public class Neon {
     String url = "jdbc:postgresql://ep-noisy-credit-a8eab2hc-pooler.eastus2.azure.neon.tech:5432/neondb?sslmode=require";
     String user = "neondb_owner"; // NOT your email
     String password = "npg_uSqdFMEL7eX1"; // The password from Neon dashboard
-
+    
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
