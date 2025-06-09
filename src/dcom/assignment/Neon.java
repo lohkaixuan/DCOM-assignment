@@ -17,7 +17,14 @@ public class Neon {
     String password = "npg_uSqdFMEL7eX1"; // The password from Neon dashboard
 
     public Connection connect() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        try {
+            Class.forName("org.postgresql.Driver");
+            
+        } catch (ClassNotFoundException e) {
+            System.out.println("PostgreSQL JDBC Driver not found. Include it in your library path."+e.getMessage());
+            throw new SQLException("PostgreSQL JDBC Driver not found.", e);
+        }
+    return DriverManager.getConnection(url, user, password);
     }
 
     public ArrayList<ArrayList<Object>> read(String table) {

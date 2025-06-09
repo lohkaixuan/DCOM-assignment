@@ -30,10 +30,10 @@ public class Server extends UnicastRemoteObject implements RMIinterface {
             System.out.println(row);
             if (row.get(0) != null && row.get(1).toString().equalsIgnoreCase(Firstname)) {
                 return "\n\nRegistration rejected: First Name '" + Firstname + "' is already used.\n";
-            }
+            }//check first name is it used
             if (row.get(0) != null && row.get(3).toString().equalsIgnoreCase(ICnumber)) {
                 return "\n\nRegistration rejected: IC number'" + ICnumber + "' is already used.\n";
-            }
+            }//check ic number is it used
         }
 
         ArrayList<Object> newData = new ArrayList<>(Arrays.asList(Firstname, Lastname, ICnumber));

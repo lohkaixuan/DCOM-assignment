@@ -1,0 +1,24 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile Java Sources",
+			"type": "shell",
+			"command": "javac",
+			"args": [
+				"-d",
+				"build",
+				"-cp",
+				"postgresql-42.7.6.jar",
+				"src/dcom/assignment/*.java"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$javac"
+			]
+		}
+	]
+}
