@@ -10,6 +10,11 @@
 <project name="DCOM_assignment" default="default" basedir=".">
     <description>Builds, tests, and runs the project DCOM assignment.</description>
     <import file="nbproject/build-impl.xml"/>
+    <path id="project.classpath">
+        <fileset dir="lib">
+            <include name="postgresql-*.jar"/>
+        </fileset>
+    </path>
     <!--
 
     There exist several targets which are by default empty and which can be 

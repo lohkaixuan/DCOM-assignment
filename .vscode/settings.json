@@ -1,5 +1,14 @@
 {
   "java.project.referencedLibraries": [
-    "lib/postgresql-<version>.jar"
+    "lib\\postgresql-42.7.6.jar"
+  ],
+  "java.project.sourcePaths": [
+    "build\\classes\\dcom\\assignment",
+    "src"
   ]
 }
+// {
+//   "java.project.referencedLibraries": [
+//     "lib/postgresql-<version>.jar"
+//   ]
+// }
