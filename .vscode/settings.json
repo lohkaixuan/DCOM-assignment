@@ -1,14 +1,21 @@
 {
+  // Add external libraries (JAR files)
   "java.project.referencedLibraries": [
     "lib\\postgresql-42.7.6.jar"
   ],
+
+  // Define where your source files are located
   "java.project.sourcePaths": [
     "build\\classes\\dcom\\assignment",
     "src"
+  ],
+
+  // Set up the Java runtime environment
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "C:\\Program Files\\Java\\jdk-21",
+      "default": true
+    }
   ]
 }
-// {
-//   "java.project.referencedLibraries": [
-//     "lib/postgresql-<version>.jar"
-//   ]
-// }

@@ -2,15 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Compile Java Sources",
+			"label": "Clean and Compile Java Project",
 			"type": "shell",
-			"command": "javac",
+			"command": "powershell",
 			"args": [
-				"-d",
-				"build",
-				"-cp",
-				"postgresql-42.7.6.jar",
-				"src/dcom/assignment/*.java"
+				"-Command",
+				"if (Test-Path build) { Remove-Item -Recurse -Force build }; javac --release 21 -d build -cp lib/* (Get-ChildItem -Recurse -Filter *.java | ForEach-Object { $_.FullName })"
 			],
 			"group": {
 				"kind": "build",

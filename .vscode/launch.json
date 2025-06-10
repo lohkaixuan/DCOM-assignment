@@ -1,0 +1,54 @@
+// {
+//     "version": "0.2.0",
+//     "configurations": [
+        
+//         {
+//             "type": "java",
+//             "name": "Server",
+//             "request": "launch",
+//             "mainClass": "dcom.assignment.Server",
+//             "projectName": "DCOM-assignment_a41df5b9",
+//             "classPaths": [
+//                 "build",
+//                 "lib/*"
+//             ],
+//             "preLaunchTask": "Clean and Compile Java Project"
+//         },
+//         {
+//             "type": "java",
+//             "name": "Client",
+//             "request": "launch",
+//             "mainClass": "dcom.assignment.Client",
+//             "projectName": "DCOM-assignment_a41df5b9",
+//             "classPaths": [
+//                 "build",
+//                 "lib/*"
+//             ],
+//             "preLaunchTask": "Clean and Compile Java Project"
+//         },
+//         {
+//             "type": "java",
+//             "name": "Firstpage",
+//             "request": "launch",
+//             "mainClass": "dcom.assignment.Firstpage",
+//             "projectName": "DCOM-assignment_a41df5b9",
+//             "classPaths": [
+//                 "build",
+//                 "lib/*"
+//             ],
+//             // "preLaunchTask": "Clean and Compile Java Project"
+//         },
+//         {
+//             "type": "java",
+//             "name": "Launch Firstpage",
+//             "request": "launch",
+//             "mainClass": "dcom.assignment.Firstpage",
+//             "projectName": "DCOM-assignment",
+//             "classPaths": [
+//                 "build",
+//                 "lib/*"
+//             ],
+//             "preLaunchTask": "Clean and Compile Java Project"
+//         }
+//     ]
+// }
