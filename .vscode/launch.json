@@ -1,4 +1,28 @@
-// {
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Firstpage",
+            "request": "launch",
+            "mainClass": "dcom.assignment.Firstpage",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "dcom.assignment.Server",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
+            "name": "Client",
+            "request": "launch",
+            "mainClass": "dcom.assignment.Client",
+            "projectName": "DCOM-assignment_a41df5b9"
+        }
+    ]
+} // {
 //     "version": "0.2.0",
 //     "configurations": [
         

@@ -14,6 +14,8 @@ public interface RMIinterface extends Remote{
     public String register(String Firstname,String LastnameString, String ICnumber)throws RemoteException;
     public String getnetpay(double tax, double hours, double basic) throws RemoteException;
     public String login(String ICnumber) throws RemoteException;
-
+    public String getinfoemployee() throws RemoteException;
+    public String getpayrollemployee() throws RemoteException;
+    
 }   
     
