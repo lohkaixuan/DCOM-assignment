@@ -9,13 +9,22 @@ package dcom.assignment;
  * @author Loh Kai Xuan
  */
 import java.rmi.*;
+import java.util.List;
 
-public interface RMIinterface extends Remote{
-    public String register(String Firstname,String LastnameString, String ICnumber)throws RemoteException;
-    public String getnetpay(double tax, double hours, double basic) throws RemoteException;
-    public String login(String ICnumber) throws RemoteException;
-    public String getinfoemployee() throws RemoteException;
-    public String getpayrollemployee() throws RemoteException;
-    
-}   
-    
+public interface RMIinterface extends Remote {
+    public Employee addnewEmplyee(String ic, String Password, String Firstname, String Lastname, String role) throws RemoteException;
+
+    public Employee getinfoemployee(String ic) throws RemoteException;
+
+    public  Employee editEmployeeByIC(Employee updatedEmployee) throws RemoteException;
+
+    public void deleteEmployeeByIC(Employee employee) throws RemoteException;
+
+    public Employee login(String ic, String password) throws RemoteException;
+
+    public String setPayrollForUser(PayrollRecord payrollRecord) throws RemoteException;
+
+    public List<PayrollRecord> getPayrollForEmployee(String icNumber) throws RemoteException;
+
+    public List<Employee> getAllEmployees() throws RemoteException;
+}

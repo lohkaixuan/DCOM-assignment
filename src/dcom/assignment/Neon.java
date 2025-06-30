@@ -19,12 +19,12 @@ public class Neon {
     public Connection connect() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
-            
+
         } catch (ClassNotFoundException e) {
-            System.out.println("PostgreSQL JDBC Driver not found. Include it in your library path."+e.getMessage());
+            System.out.println("PostgreSQL JDBC Driver not found. Include it in your library path." + e.getMessage());
             throw new SQLException("PostgreSQL JDBC Driver not found.", e);
         }
-    return DriverManager.getConnection(url, user, password);
+        return DriverManager.getConnection(url, user, password);
     }
 
     public ArrayList<ArrayList<Object>> read(String table) {
@@ -49,20 +49,95 @@ public class Neon {
         return data;
     }
 
-    public String adddata(String table, ArrayList<Object> data) {
-        
+    public String addData(String table, ArrayList<String> columns, ArrayList<Object> values) {
+        if (columns.size() != values.size()) {
+            return "Error: Column count and value count do not match!";
+        }
+
+        StringBuilder colBuilder = new StringBuilder();
+        StringBuilder valBuilder = new StringBuilder();
+
+        for (int i = 0; i < columns.size(); i++) {
+            colBuilder.append(columns.get(i));
+            valBuilder.append("?");
+            if (i < columns.size() - 1) {
+                colBuilder.append(", ");
+                valBuilder.append(", ");
+            }
+        }
+
+        String sql = "INSERT INTO " + table + " (" + colBuilder + ") VALUES (" + valBuilder + ")";
+
         try (Connection conn = connect()) {
-            String sql = "INSERT INTO " + table + " (firstname, lastname, icnumber) VALUES (?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            for (int i = 0; i < data.size(); i++) {
-                pstmt.setObject(i + 1, data.get(i));
+            for (int i = 0; i < values.size(); i++) {
+                pstmt.setObject(i + 1, values.get(i));
             }
             int rowsAffected = pstmt.executeUpdate();
-            System.out.println("Inserted " + rowsAffected + " row(s) into " + table);
-            return "Inserted " + rowsAffected + " row(s) into " + table;
+
+            // Build a string of inserted data
+            StringBuilder insertedData = new StringBuilder();
+            insertedData.append("Inserted ").append(rowsAffected).append(" row(s) into ").append(table).append(".\n");
+            insertedData.append("Data: { ");
+            for (int i = 0; i < columns.size(); i++) {
+                insertedData.append(columns.get(i)).append(": ").append(values.get(i));
+                if (i < columns.size() - 1)
+                    insertedData.append(", ");
+            }
+            insertedData.append(" }");
+            return insertedData.toString();
         } catch (SQLException e) {
             e.printStackTrace();
             return "Error inserting data: " + e.getMessage();
         }
     }
+
+    public String updateData(String table, ArrayList<String> columns, ArrayList<Object> values, String conditionColumn,
+            Object conditionValue) {
+        if (columns.size() != values.size()) {
+            return "Error: Column count and value count do not match!";
+        }
+
+        StringBuilder setBuilder = new StringBuilder();
+        for (int i = 0; i < columns.size(); i++) {
+            setBuilder.append(columns.get(i)).append(" = ?");
+            if (i < columns.size() - 1) {
+                setBuilder.append(", ");
+            }
+        }
+
+        String sql = "UPDATE " + table + " SET " + setBuilder + " WHERE " + conditionColumn + " = ?";
+
+        try (Connection conn = connect()) {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            for (int i = 0; i < values.size(); i++) {
+                pstmt.setObject(i + 1, values.get(i));
+            }
+            pstmt.setObject(values.size() + 1, conditionValue);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("Updated " + rowsAffected + " row(s) in " + table);
+            return "Updated " + rowsAffected + " row(s) in " + table;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error updating data: " + e.getMessage();
+        }
+    }
+
+    public String deleteData(String table, String conditionColumn, Object conditionValue) {
+        String sql = "DELETE FROM " + table + " WHERE " + conditionColumn + " = ?";
+
+        try (Connection conn = connect()) {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setObject(1, conditionValue);
+
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("Deleted " + rowsAffected + " row(s) from " + table);
+            return "Deleted " + rowsAffected + " row(s) from " + table;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error deleting data: " + e.getMessage();
+        }
+    }
+
 }
