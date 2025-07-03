@@ -123,7 +123,6 @@ class MenuPage extends JFrame implements ActionListener {
             registerBtn.addActionListener(this);
             registerBtn.setPreferredSize(buttonSize);
             registerBtn.setMaximumSize(buttonSize);
-            registerBtn.addActionListener(this); // Use the same action listener
             JPanel registerPanel = new JPanel();
             registerPanel.setLayout(new BoxLayout(registerPanel, BoxLayout.X_AXIS));
             registerPanel.setOpaque(false); // no background
@@ -138,7 +137,6 @@ class MenuPage extends JFrame implements ActionListener {
             setpayrollBtn.addActionListener(this);
             setpayrollBtn.setPreferredSize(buttonSize);
             setpayrollBtn.setMaximumSize(buttonSize);
-            setpayrollBtn.addActionListener(this); // Use the same action listener
             JPanel setpayrollPanel = new JPanel();
             setpayrollPanel.setLayout(new BoxLayout(setpayrollPanel, BoxLayout.X_AXIS));
             setpayrollPanel.setOpaque(false); // no background
@@ -213,22 +211,17 @@ class MenuPage extends JFrame implements ActionListener {
         if (e.getSource() == profileBtn) {
             new ProfilePage();
             dispose();
-            // JOptionPane.showMessageDialog(this, "Function 1 selected.");
         } else if (e.getSource() == payrollBtn) {
             new PayrollPage();
             dispose();
-            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
         } else if (e.getSource() == setpayrollBtn) {
             new SetPayrollForUser();
             dispose();
-            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
         } else if (e.getSource() == showallBtn) {
             new ShowallPage();
             dispose();
-            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
-
-        } else if (e.getSource() == logoutBtn) {        
-                dispose();
+        } else if (e.getSource() == logoutBtn) { 
+            System.exit(0);
         } else if (e.getSource() == registerBtn) {
             new RegisterPage();
             dispose();
@@ -697,10 +690,8 @@ class SetPayrollForUser extends JFrame implements ActionListener {
             taxField.setText("");
             hourField.setText("");
             basicField.setText("");
-            // Remove: monthField.setText("");
             yearField.setText("");
         });
-
         add(mainPanel);
         setVisible(true);
     }
@@ -727,7 +718,6 @@ class SetPayrollForUser extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please fill all fields.");
                 return;
             }
-
             try {
                 double hoursWorked = Double.parseDouble(hourStr);
                 double basicSalary = Double.parseDouble(basicStr);
