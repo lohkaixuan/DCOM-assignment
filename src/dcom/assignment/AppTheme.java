@@ -3,7 +3,6 @@ package dcom.assignment;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.rmi.*;
@@ -15,8 +14,27 @@ public class AppTheme {
     public static final int FRAME_WIDTH = 600;
     public static final int FRAME_HEIGHT = 600;
     public static final int TEXTFIELD = 30;
+    //private static final String DEFAULT_HOST = "10.101.100.120";
+    private static final String DEFAULT_HOST = "localhost";
+    private static final int DEFAULT_PORT = 1060;
+    private static final String SERVICE_NAME = "sub";
 
+    public static RMIinterface getRMI() {
+        return getRMI(DEFAULT_HOST, DEFAULT_PORT, SERVICE_NAME);
+    }
+
+    public static RMIinterface getRMI(String host, int port, String serviceName) {
+        try {
+            String url = String.format("rmi://%s:%d/%s", host, port, serviceName);
+            return (RMIinterface) Naming.lookup(url);
+        } catch (Exception e) {
+            System.err.println("RMI lookup failed: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
+
 
 class LoginPage extends JFrame implements ActionListener {
     JTextField icField, passwordField;
@@ -68,7 +86,7 @@ class LoginPage extends JFrame implements ActionListener {
             String password = passwordField.getText().trim();
 
             try {
-                RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+                RMIinterface obj = AppTheme.getRMI(); 
                 // Assuming your RMI interface has a method like `login(String ic)`
                 Employee emp = obj.login(ic, password);
                 if (emp != null) {
@@ -79,7 +97,7 @@ class LoginPage extends JFrame implements ActionListener {
                 } else {
                     JOptionPane.showMessageDialog(this, "Login failed.");
                 }
-            } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace(); // Good for debugging
                 JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
             }
@@ -328,7 +346,7 @@ class RegisterPage extends JFrame implements ActionListener {
                 return;
             }
             try {
-                RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+                RMIinterface obj = AppTheme.getRMI();
                 // Assuming your RMI interface has a method like `login(String ic)`
                 Employee emp = obj.addnewEmplyee(ic, password, first, last, role);
                 if (emp != null) {
@@ -338,7 +356,7 @@ class RegisterPage extends JFrame implements ActionListener {
                 } else {
                     JOptionPane.showMessageDialog(this, "Registration failed.");
                 }
-            } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+            } catch (RemoteException ex) {
                 ex.printStackTrace(); // Good for debugging
                 JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
             }
@@ -437,7 +455,7 @@ class ProfilePage extends JFrame implements ActionListener {
             if (!first.isEmpty() && !last.isEmpty() && !pass.isEmpty() && !phone.isEmpty()) {
 
                 try {
-                    RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+                    RMIinterface obj = AppTheme.getRMI();
                     Employee updatedEmployee = new Employee(
                             Session.currentUser.getIC(), // Use the current user's IC
                             pass, // Updated password
@@ -455,7 +473,7 @@ class ProfilePage extends JFrame implements ActionListener {
                     } else {
                         JOptionPane.showMessageDialog(this, "Login failed.");
                     }
-                } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+                } catch (RemoteException  ex) {
                     ex.printStackTrace(); // Good for debugging
                     JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
                 }
@@ -490,7 +508,7 @@ class PayrollPage extends JFrame implements ActionListener {
         // Left: Payroll list
         listModel = new DefaultListModel<>();
         try {
-            RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+            RMIinterface obj = AppTheme.getRMI();
             recordlist = obj.getPayrollForEmployee(emp.getIC());
             if (recordlist != null && !recordlist.isEmpty()) {
                 for (PayrollRecord record : recordlist) {
@@ -499,7 +517,7 @@ class PayrollPage extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "Record Empty.");
             }
-        } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+        } catch (RemoteException  ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
         }
@@ -614,7 +632,7 @@ class SetPayrollForUser extends JFrame implements ActionListener {
         // Left: Employee list
         listModel = new DefaultListModel<>();
         try {
-            RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+            RMIinterface obj = AppTheme.getRMI();
             recordlist = obj.getAllEmployees();
             if (recordlist != null && !recordlist.isEmpty()) {
                 for (Employee record : recordlist) {
@@ -623,7 +641,7 @@ class SetPayrollForUser extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "Record Empty.");
             }
-        } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+        } catch (RemoteException  ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
         }
@@ -727,7 +745,7 @@ class SetPayrollForUser extends JFrame implements ActionListener {
                 int year = Integer.parseInt(yearStr);
                 PayrollRecord payrollRecord = new PayrollRecord(icNumber, hoursWorked, basicSalary, taxAmount, month,
                         year);
-                RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+                RMIinterface obj = AppTheme.getRMI();
                 // Call your function to create payroll record
                 String message = obj.setPayrollForUser(payrollRecord);
                 if (message.contains("Failed")) {
