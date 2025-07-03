@@ -22,13 +22,9 @@ public class MultiThread {
                 try {
                     List<Employee> employees = obj.getAllEmployees();
                     if (employees != null) {
-                        System.out.println("[Thread 1] Employees fetched: " + employees.size());
-
                         for (Employee emp : employees) {
                             System.out.println("[Thread 1] Employee: " + emp.getFirstName() + " " + emp.getLastName()
                                     + " (" + emp.getIC() + ")");
-
-                            // Start a new thread for each employee's payroll
                             Thread payrollThread = new Thread(() -> {
                                 try {
                                     List<PayrollRecord> payrolls = obj.getPayrollForEmployee(emp.getIC());
@@ -47,10 +43,10 @@ public class MultiThread {
                                     e.printStackTrace();
                                 }
                             });
-
                             payrollThread.start();
+                            payrollThread.join(); // Wait for payroll thread to finish before continuing
                         }
-
+                        System.out.println("[Thread 1] Finished processing all employees.");
                     } else {
                         System.out.println("[Thread 1] No employees found.");
                     }
@@ -59,9 +55,7 @@ public class MultiThread {
                     e.printStackTrace();
                 }
             });
-
             employeeThread.start();
-
         } catch (Exception e) {
             System.out.println("[Main] Error initializing thread.");
             e.printStackTrace();
