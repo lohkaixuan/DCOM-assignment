@@ -220,8 +220,8 @@ class MenuPage extends JFrame implements ActionListener {
         } else if (e.getSource() == showallBtn) {
             new ShowallPage();
             dispose();
-        } else if (e.getSource() == logoutBtn) {        
-            dispose();
+        } else if (e.getSource() == logoutBtn) { 
+            System.exit(0);
         } else if (e.getSource() == registerBtn) {
             new RegisterPage();
             dispose();
