@@ -344,6 +344,7 @@ class RegisterPage extends JFrame implements ActionListener {
             }
         } else if (e.getSource() == backButton) {
             dispose();
+            new MenuPage(); // Go back to the menu page
         }
     }
 }
