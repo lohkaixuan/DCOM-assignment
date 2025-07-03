@@ -11,7 +11,10 @@ public class MultiThread {
 
     public void getAllInfo() {
         try {
-            RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
+           String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,
+                        AppTheme.RMI_SERVICE);
+                        System.out.println("Connecting to RMI server at: " + url); // Debugging line
+                RMIinterface obj = (RMIinterface) Naming.lookup(url);
 
             Thread thread = new Thread(() -> {
                 System.out.println("[Thread] Starting employee and payroll fetch...");
