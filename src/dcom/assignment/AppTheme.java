@@ -227,13 +227,8 @@ class MenuPage extends JFrame implements ActionListener {
             dispose();
             // JOptionPane.showMessageDialog(this, "Function 2 selected.");
 
-        } else if (e.getSource() == logoutBtn) {
-            int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?",
-                    "Logout Confirmation", JOptionPane.YES_NO_OPTION);
-            if (response == JOptionPane.YES_OPTION) {
-                new LoginPage();
+        } else if (e.getSource() == logoutBtn) {        
                 dispose();
-            }
         } else if (e.getSource() == registerBtn) {
             new RegisterPage();
             dispose();
