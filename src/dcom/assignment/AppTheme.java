@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.rmi.*;
 import java.net.MalformedURLException;
+import javax.swing.table.DefaultTableModel;
 
 public class AppTheme {
     // Global frame size
@@ -64,19 +65,19 @@ class LoginPage extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == loginBtn) {
             String ic = icField.getText().trim();
-            String password =  passwordField.getText().trim();
+            String password = passwordField.getText().trim();
 
             try {
                 RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
                 // Assuming your RMI interface has a method like `login(String ic)`
-                Employee emp = obj.login(ic, password);             
+                Employee emp = obj.login(ic, password);
                 if (emp != null) {
                     Session.currentUser = emp; // Store the user globally
                     JOptionPane.showMessageDialog(this, "Welcome " + emp.getFirstName());
                     new MenuPage();
                     dispose();
                 } else {
-                JOptionPane.showMessageDialog(this, "Login failed.");
+                    JOptionPane.showMessageDialog(this, "Login failed.");
                 }
             } catch (RemoteException | NotBoundException | MalformedURLException ex) {
                 ex.printStackTrace(); // Good for debugging
@@ -84,13 +85,14 @@ class LoginPage extends JFrame implements ActionListener {
             }
         }
     }
+
     public static void main(String[] args) {
         new LoginPage();
     }
 }
 
 class MenuPage extends JFrame implements ActionListener {
-    JButton profileBtn, payrollBtn, setpayrollBtn, registerBtn, logoutBtn;
+    JButton profileBtn, payrollBtn, setpayrollBtn, registerBtn, showallBtn, logoutBtn;
 
     public MenuPage() {
         setTitle("Menu Page");
@@ -125,7 +127,7 @@ class MenuPage extends JFrame implements ActionListener {
             panel.add(registerPanel);
             panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-            //setpayroll
+            // setpayroll
             setpayrollBtn = new JButton("Set Payroll Employee");
             setpayrollBtn.addActionListener(this);
             setpayrollBtn.setPreferredSize(buttonSize);
@@ -139,8 +141,22 @@ class MenuPage extends JFrame implements ActionListener {
             setpayrollPanel.add(Box.createHorizontalGlue());
             panel.add(setpayrollPanel);
             panel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            // showall
+            showallBtn = new JButton("Show all Payroll & Employee");
+            showallBtn.addActionListener(this);
+            showallBtn.setPreferredSize(buttonSize);
+            showallBtn.setMaximumSize(buttonSize);
+            JPanel showallPanel = new JPanel();
+            showallPanel.setLayout(new BoxLayout(showallPanel, BoxLayout.X_AXIS));
+            showallPanel.setOpaque(false); // no background
+            showallPanel.add(Box.createHorizontalGlue());
+            showallPanel.add(showallBtn);
+            showallPanel.add(Box.createHorizontalGlue());
+            panel.add(showallPanel);
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
         }
-        
+
         // Profile Button
         profileBtn = new JButton("Profile");
         profileBtn.addActionListener(this);
@@ -155,7 +171,7 @@ class MenuPage extends JFrame implements ActionListener {
         panel.add(profilepanel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Payroll  Button
+        // Payroll Button
         payrollBtn = new JButton("Payroll");
         payrollBtn.addActionListener(this);
         payrollBtn.setPreferredSize(buttonSize);
@@ -191,16 +207,21 @@ class MenuPage extends JFrame implements ActionListener {
         if (e.getSource() == profileBtn) {
             new ProfilePage();
             dispose();
-            //JOptionPane.showMessageDialog(this, "Function 1 selected.");
+            // JOptionPane.showMessageDialog(this, "Function 1 selected.");
         } else if (e.getSource() == payrollBtn) {
             new PayrollPage();
             dispose();
-            //JOptionPane.showMessageDialog(this, "Function 2 selected.");
+            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
         } else if (e.getSource() == setpayrollBtn) {
             new SetPayrollForUser();
             dispose();
-            //JOptionPane.showMessageDialog(this, "Function 2 selected.");
-        }else if (e.getSource() == logoutBtn) {
+            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
+        } else if (e.getSource() == showallBtn) {
+            new ShowallPage();
+            dispose();
+            // JOptionPane.showMessageDialog(this, "Function 2 selected.");
+
+        } else if (e.getSource() == logoutBtn) {
             int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?",
                     "Logout Confirmation", JOptionPane.YES_NO_OPTION);
             if (response == JOptionPane.YES_OPTION) {
@@ -221,14 +242,14 @@ class RegisterPage extends JFrame implements ActionListener {
 
     public RegisterPage() {
         setTitle("Register Page");
-        setSize(370 ,450);
+        setSize(370, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Main vertical panel (like Flutter's Column)
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10)); // Padding around the panel
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding around the panel
 
         // First Name Row
         JPanel firstNameRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -248,13 +269,13 @@ class RegisterPage extends JFrame implements ActionListener {
         icField = new JTextField(AppTheme.TEXTFIELD);
         icRow.add(icField);
 
-         // Passowrd Row
+        // Passowrd Row
         JPanel passowrdRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         passowrdRow.add(new JLabel("Password:"));
         passowrdField = new JTextField(AppTheme.TEXTFIELD);
         passowrdRow.add(passowrdField);
 
-         // Role Row
+        // Role Row
         JPanel roleRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         roleRow.add(new JLabel("Role:"));
 
@@ -266,7 +287,7 @@ class RegisterPage extends JFrame implements ActionListener {
         roleRow.add(hrRadio);
         roleRow.add(employeeRadio);
 
-        //button
+        // button
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         backButton = new JButton("Back");
         backButton.addActionListener(this);
@@ -281,7 +302,7 @@ class RegisterPage extends JFrame implements ActionListener {
         mainPanel.add(lastNameRow);
         mainPanel.add(icRow);
         mainPanel.add(passowrdRow);
-        mainPanel.add(roleRow); 
+        mainPanel.add(roleRow);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10))); // spacing
         mainPanel.add(buttonPanel);
         add(mainPanel);
@@ -309,7 +330,7 @@ class RegisterPage extends JFrame implements ActionListener {
             try {
                 RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
                 // Assuming your RMI interface has a method like `login(String ic)`
-                Employee emp = obj.addnewEmplyee( ic,  password,  first,  last,  role);             
+                Employee emp = obj.addnewEmplyee(ic, password, first, last, role);
                 if (emp != null) {
                     JOptionPane.showMessageDialog(this, "Registration successful!");
                     new MenuPage();
@@ -328,7 +349,7 @@ class RegisterPage extends JFrame implements ActionListener {
 }
 
 class ProfilePage extends JFrame implements ActionListener {
-    JTextField firstNameField, lastNameField, phoneField, passwordField;    //JPasswordField passwordField;
+    JTextField firstNameField, lastNameField, phoneField, passwordField; // JPasswordField passwordField;
     JLabel icLabel, roleLabel;
     JButton updateButton, backButton;
 
@@ -374,7 +395,7 @@ class ProfilePage extends JFrame implements ActionListener {
         roleLabel = new JLabel(emp.getRole());
         roleRow.add(roleLabel);
 
-         // phone number
+        // phone number
         JPanel phoneRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         phoneRow.add(new JLabel("Phone:"));
         phoneField = new JTextField(emp.getPhoneNumber(), AppTheme.TEXTFIELD);
@@ -512,11 +533,20 @@ class PayrollPage extends JFrame implements ActionListener {
 
         mainPanel.add(detailsPanel, BorderLayout.CENTER);
 
-        // Bottom: Back button
+        // Bottom: Back and Clear buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         backButton = new JButton("Back");
         backButton.addActionListener(this);
         buttonPanel.add(backButton);
+
+        // Add Clear button
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(e -> {
+            payrollList.clearSelection();
+            clearPayrollLabels();
+        });
+        buttonPanel.add(clearButton);
+
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // List selection listener
@@ -549,6 +579,17 @@ class PayrollPage extends JFrame implements ActionListener {
             new MenuPage();
             dispose();
         }
+    }
+
+    // Helper method to clear labels
+    private void clearPayrollLabels() {
+        monthYearLabel.setText("Month / Year: ");
+        hoursLabel.setText("Hours: ");
+        basicSalaryLabel.setText("Basic Salary: ");
+        taxLabel.setText("Tax: ");
+        grossPayLabel.setText("Gross Pay: ");
+        deductionLabel.setText("Deduction: ");
+        netPayLabel.setText("Net Pay: ");
     }
 }
 
@@ -614,7 +655,7 @@ class SetPayrollForUser extends JFrame implements ActionListener {
         // Month row (use JComboBox, not JTextField)
         JPanel monthRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         monthRow.add(new JLabel("Month:"));
-        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        String[] months = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
         monthCombo = new JComboBox<>(months);
         monthRow.add(monthCombo);
 
@@ -683,12 +724,13 @@ class SetPayrollForUser extends JFrame implements ActionListener {
                 double basicSalary = Double.parseDouble(basicStr);
                 double taxAmount = Double.parseDouble(taxStr);
                 int year = Integer.parseInt(yearStr);
-                PayrollRecord payrollRecord = new PayrollRecord(icNumber, hoursWorked, basicSalary, taxAmount, month, year);
+                PayrollRecord payrollRecord = new PayrollRecord(icNumber, hoursWorked, basicSalary, taxAmount, month,
+                        year);
                 RMIinterface obj = (RMIinterface) Naming.lookup("rmi://localhost:1060/sub");
                 // Call your function to create payroll record
-                String message = obj.setPayrollForUser( payrollRecord);
+                String message = obj.setPayrollForUser(payrollRecord);
                 if (message.contains("Failed")) {
-                    JOptionPane.showMessageDialog(this, "Failed to create payroll record.");
+                    JOptionPane.showMessageDialog(this, "Failed to create payroll record." + message);
                 } else {
                     JOptionPane.showMessageDialog(this, "Successfully  create payroll record.");
                 }
@@ -702,4 +744,73 @@ class SetPayrollForUser extends JFrame implements ActionListener {
     }
 }
 
+class ShowallPage extends JFrame implements ActionListener {
+    JTable payrollTable;
+    DefaultTableModel tableModel;
+    JButton backButton, startButton;
 
+    public ShowallPage() {
+        setTitle("Payroll Overview");
+        setSize(800, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        // Table columns
+        String[] columnNames = {
+                "Employee Name", "Hours", "Basic Salary", "Tax",
+                "Gross Pay", "Deduction", "Net Pay", "Month", "Year"
+        };
+
+        // Table model and table
+        tableModel = new DefaultTableModel(columnNames, 0);
+        payrollTable = new JTable(tableModel);
+        JScrollPane tableScroll = new JScrollPane(payrollTable);
+
+        // Main panel
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.add(tableScroll, BorderLayout.CENTER);
+
+        // Button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        backButton = new JButton("Back");
+        startButton = new JButton("Start");
+        backButton.addActionListener(this);
+        startButton.addActionListener(this);
+        buttonPanel.add(backButton);
+        buttonPanel.add(startButton);
+
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        add(mainPanel);
+        setVisible(true);
+    }
+
+    public void addPayrollRow(Employee emp, PayrollRecord record) {
+        SwingUtilities.invokeLater(() -> {
+            tableModel.addRow(new Object[] {
+                    emp.getFirstName() + " " + emp.getLastName(),
+                    record.getHoursWorked(),
+                    record.getBasicSalary(),
+                    record.getTaxAmount(),
+                    record.getGrossPay(),
+                    record.getDeduction(),
+                    record.getNetPay(), 
+                    record.getMonth(), 
+                    record.getYear()
+            });
+        });
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == backButton) {
+            new MenuPage();
+            dispose();
+        } else if (e.getSource() == startButton) {
+            tableModel.setRowCount(0); // Clear previous data
+            MultiThread multiThread = new MultiThread(this);
+            multiThread.getAllInfo();
+        }
+    }
+
+}

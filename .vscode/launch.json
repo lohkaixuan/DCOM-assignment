@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MultiThreadExample",
+            "request": "launch",
+            "mainClass": "dcom.assignment.MultiThreadExample",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
+            "name": "LoginPage",
+            "request": "launch",
+            "mainClass": "dcom.assignment.LoginPage",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
             "name": "Firstpage",
             "request": "launch",
             "mainClass": "dcom.assignment.Firstpage",

@@ -142,10 +142,10 @@ public class ServerFunction extends UnicastRemoteObject implements RMIinterface 
 
         // Insert into payroll table
         ArrayList<String> columns = new ArrayList<>(Arrays.asList(
-            "userid", "hours", "basic", "tax", "month", "year", "netpay", "grosspay", "deduction"
+            "icnumber", "hours", "basic", "tax", "month", "year", "netpay", "grosspay", "deduction"
         ));
         ArrayList<Object> values = new ArrayList<>(Arrays.asList(
-            userId, hours, basic, tax, month, year, netPay, grossPay, deduction
+            icNumber, hours, basic, tax, month, year, netPay, grossPay, deduction
         ));
 
         String result = neon.addData(PAYROLL_TABLE, columns, values);
