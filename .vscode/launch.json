@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SocketServer",
+            "request": "launch",
+            "mainClass": "dcom.assignment.SocketServer",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
             "name": "MultiThreadExample",
             "request": "launch",
             "mainClass": "dcom.assignment.MultiThreadExample",
