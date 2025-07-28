@@ -2,27 +2,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "SocketClient",
-            "request": "launch",
-            "mainClass": "dcom.assignment.SocketClient",
-            "projectName": "DCOM-assignment_90a301e7"
-        },
-        {
-            "type": "java",
-            "name": "LoginPage",
-            "request": "launch",
-            "mainClass": "dcom.assignment.LoginPage",
-            "projectName": "DCOM-assignment_90a301e7"
-        },
-        {
-            "type": "java",
-            "name": "Server",
-            "request": "launch",
-            "mainClass": "dcom.assignment.Server",
-            "projectName": "DCOM-assignment_90a301e7"
-        },
-        {
-            "type": "java",
             "name": "MultiThreadExample",
             "request": "launch",
             "mainClass": "dcom.assignment.MultiThreadExample",
