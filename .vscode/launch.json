@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SocketClient",
+            "request": "launch",
+            "mainClass": "dcom.assignment.SocketClient",
+            "projectName": "DCOM-assignment_90a301e7"
+        },
+        {
+            "type": "java",
             "name": "LoginPage",
             "request": "launch",
             "mainClass": "dcom.assignment.LoginPage",
