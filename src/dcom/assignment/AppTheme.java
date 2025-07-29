@@ -29,6 +29,10 @@ public class AppTheme {
     public static final String RMI_SERVICE = "sub"; // Change to your RMI service name
 
 }
+class Session {
+    private Session() {}
+    public static Employee currentUser;
+} 
 
 class LoginPage extends JFrame implements ActionListener {
     JTextField icField, passwordField;
