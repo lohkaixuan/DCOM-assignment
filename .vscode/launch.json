@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Session",
+            "request": "launch",
+            "mainClass": "dcom.assignment.Session",
+            "projectName": "DCOM-assignment_a41df5b9"
+        },
+        {
+            "type": "java",
             "name": "MultiThreadExample",
             "request": "launch",
             "mainClass": "dcom.assignment.MultiThreadExample",

@@ -3,11 +3,19 @@ package dcom.assignment;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.rmi.*;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+
 import javax.swing.table.DefaultTableModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.io.File;
 
 public class AppTheme {
     // Global frame size
@@ -749,11 +757,11 @@ class SetPayrollForUser extends JFrame implements ActionListener {
 class ShowallPage extends JFrame implements ActionListener {
     JTable payrollTable;
     DefaultTableModel tableModel;
-    JButton backButton, startButton;
+    JButton backButton, startButton, exportButton, deserializeButton; // NEW
 
     public ShowallPage() {
         setTitle("Payroll Overview");
-        setSize(800, 400);
+        setSize(900, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -764,29 +772,53 @@ class ShowallPage extends JFrame implements ActionListener {
         };
 
         // Table model and table
-        tableModel = new DefaultTableModel(columnNames, 0);
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+
         payrollTable = new JTable(tableModel);
+        payrollTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScroll = new JScrollPane(payrollTable);
 
-        // Main panel
+        // Panels & buttons
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.add(tableScroll, BorderLayout.CENTER);
 
-        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        backButton = new JButton("Back");
-        startButton = new JButton("Start");
+        backButton       = new JButton("Back");
+        startButton      = new JButton("Start");
+        exportButton     = new JButton("Export Selected Row");
+        deserializeButton = new JButton("Deserialize..."); // NEW
+
         backButton.addActionListener(this);
         startButton.addActionListener(this);
+        exportButton.addActionListener(this);
+        deserializeButton.addActionListener(this); // NEW
+        exportButton.setEnabled(false);
+
         buttonPanel.add(backButton);
         buttonPanel.add(startButton);
+        buttonPanel.add(exportButton);
+        buttonPanel.add(deserializeButton); // NEW
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(mainPanel);
+
+        // Selection listener AFTER exportButton is created
+        payrollTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    exportButton.setEnabled(payrollTable.getSelectedRow() != -1);
+                }
+            }
+        });
+
         setVisible(true);
     }
 
+    /** UI helper: add a row using Employee + PayrollRecord */
     public void addPayrollRow(Employee emp, PayrollRecord record) {
         SwingUtilities.invokeLater(() -> {
             tableModel.addRow(new Object[] {
@@ -803,16 +835,336 @@ class ShowallPage extends JFrame implements ActionListener {
         });
     }
 
+    /** Build a DTO from the currently selected row */
+    private PayrollRowDTO buildDTOFromSelectedRow() {
+        int r = payrollTable.getSelectedRow();
+        if (r == -1) return null;
+
+        String employeeName = String.valueOf(tableModel.getValueAt(r, 0));
+        double hours       = parseDouble(tableModel.getValueAt(r, 1));
+        double basic       = parseDouble(tableModel.getValueAt(r, 2));
+        double tax         = parseDouble(tableModel.getValueAt(r, 3));
+        double gross       = parseDouble(tableModel.getValueAt(r, 4));
+        double deduction   = parseDouble(tableModel.getValueAt(r, 5));
+        double net         = parseDouble(tableModel.getValueAt(r, 6));
+        String month       = String.valueOf(tableModel.getValueAt(r, 7));
+        String year        = String.valueOf(tableModel.getValueAt(r, 8));
+
+        return new PayrollRowDTO(employeeName, hours, basic, tax, gross, deduction, net, month, year);
+    }
+
+    private double parseDouble(Object o) {
+        if (o == null) return 0.0;
+        try { return Double.parseDouble(String.valueOf(o)); }
+        catch (NumberFormatException e) { return 0.0; }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == backButton) {
+        Object src = e.getSource();
+
+        if (src == backButton) {
             new MenuPage();
             dispose();
-        } else if (e.getSource() == startButton) {
-            tableModel.setRowCount(0); // Clear previous data
+
+        } else if (src == startButton) {
+            tableModel.setRowCount(0);
+            payrollTable.clearSelection();
+            exportButton.setEnabled(false);
             MultiThread multiThread = new MultiThread(this);
             multiThread.getAllInfo();
+
+        } else if (src == exportButton) {
+            PayrollRowDTO dto = buildDTOFromSelectedRow();
+            if (dto == null) {
+                JOptionPane.showMessageDialog(this, "Please select a row to export.", "No Selection",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Save Payroll Row as PDF");
+            chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Files (*.pdf)", "pdf"));
+
+            String baseName = String.format(
+                    "payroll_%s_%s_%s",
+                    slug(dto.getEmployeeName()),
+                    slug(dto.getMonth()),
+                    slug(dto.getYear())
+            );
+            chooser.setSelectedFile(new File(baseName + ".pdf"));
+
+            int result = chooser.showSaveDialog(this);
+            if (result != JFileChooser.APPROVE_OPTION) return;
+
+            File pdfFile = chooser.getSelectedFile();
+            if (!pdfFile.getName().toLowerCase().endsWith(".pdf")) {
+                pdfFile = new File(pdfFile.getParentFile(), pdfFile.getName() + ".pdf");
+            }
+
+            try {
+                BasicPdfExporter.exportPayrollRowToPDF(dto, pdfFile);
+                File serFile = new File(pdfFile.getParentFile(),
+                        pdfFile.getName().replaceAll("(?i)\\.pdf$", "") + ".ser");
+                Serialization.serialize(dto, serFile); // use your util class name
+                JOptionPane.showMessageDialog(this,
+                        "Exported:\n" + pdfFile.getAbsolutePath() +
+                        "\nSerialized:\n" + serFile.getAbsolutePath(),
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                        "Export failed: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } else if (src == deserializeButton) { // NEW
+            // If a row is selected, pass it as BEFORE; else null
+            PayrollRowDTO before = buildDTOFromSelectedRow();
+            new DeserializePage(before);
         }
     }
 
+    /** Make a string safe for filenames: letters/numbers only, others -> '_' */
+    private static String slug(String s) {
+        if (s == null) return "";
+        String t = s.trim().replaceAll("[^A-Za-z0-9]+", "_");
+        return t.replaceAll("^_+|_+$", "");
+    }
+}
+
+class DeserializePage extends JFrame implements ActionListener {
+
+    private final JTextArea beforeArea;
+    private final JTextArea serializedArea;   // NEW: shows .ser file bytes (hex/base64)
+    private final JTextArea afterArea;
+
+    private final JLabel filePathLabel;
+    private final JComboBox<String> viewMode; // "Hex" or "Base64"
+    private final JButton chooseBtn, backBtn, exitBtn;
+
+    private final PayrollRowDTO beforeDto;
+    private byte[] lastRaw = null;            // remembers last .ser bytes to re-render on mode change
+
+    public DeserializePage(PayrollRowDTO beforeDto) {
+        this.beforeDto = beforeDto;
+
+        setTitle("Deserialize Payroll (.ser)");
+        setSize(1100, 620);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // --- Top: info + file path + view mode ---
+        JPanel north = new JPanel(new BorderLayout(8, 8));
+        JLabel info = new JLabel("Pick a .ser file. LEFT = BEFORE (table row), CENTER = Serialized (.ser), RIGHT = AFTER (deserialized).");
+        info.setBorder(BorderFactory.createEmptyBorder(10,10,0,10));
+
+        JPanel pathAndMode = new JPanel(new BorderLayout(8, 8));
+        filePathLabel = new JLabel("File: (none)");
+        filePathLabel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+
+        JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        modePanel.add(new JLabel("View serialized as:"));
+        viewMode = new JComboBox<>(new String[]{"Hex", "Base64"});
+        viewMode.addActionListener(e -> renderSerializedAgain());
+        modePanel.add(viewMode);
+
+        pathAndMode.add(filePathLabel, BorderLayout.CENTER);
+        pathAndMode.add(modePanel,     BorderLayout.EAST);
+
+        north.add(info,         BorderLayout.NORTH);
+        north.add(pathAndMode,  BorderLayout.SOUTH);
+
+        // --- Center: three columns ---
+        beforeArea     = buildMonospaceArea();
+        serializedArea = buildMonospaceArea();
+        afterArea      = buildMonospaceArea();
+
+        JPanel leftPanel   = titledPanel("BEFORE (from selected row)", new JScrollPane(beforeArea));
+        JPanel middlePanel = titledPanel("SERIALIZED BYTES (.ser)",     new JScrollPane(serializedArea));
+        JPanel rightPanel  = titledPanel("AFTER (deserialized from .ser)", new JScrollPane(afterArea));
+
+        JPanel center = new JPanel(new GridLayout(1, 3, 10, 10));
+        center.add(leftPanel);
+        center.add(middlePanel);
+        center.add(rightPanel);
+
+        // --- Bottom: buttons ---
+        JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 8));
+        chooseBtn = new JButton("Choose .ser File");
+        backBtn   = new JButton("Back");
+        exitBtn   = new JButton("Exit");
+        for (JButton b : new JButton[]{chooseBtn, backBtn, exitBtn}) b.addActionListener(this);
+        south.add(chooseBtn);
+        south.add(backBtn);
+        south.add(exitBtn);
+
+        // --- Compose frame ---
+        JPanel root = new JPanel(new BorderLayout(10,10));
+        root.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        root.add(north,  BorderLayout.NORTH);
+        root.add(center, BorderLayout.CENTER);
+        root.add(south,  BorderLayout.SOUTH);
+        setContentPane(root);
+
+        // Preload BEFORE area
+        beforeArea.setText(beforeDto != null ? formatDto(beforeDto) : "(No row selected in ShowallPage)");
+
+        setVisible(true);
+    }
+
+    private static JTextArea buildMonospaceArea() {
+        JTextArea ta = new JTextArea();
+        ta.setEditable(false);
+        ta.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        ta.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        return ta;
+    }
+
+    private static JPanel titledPanel(String title, JComponent content) {
+        JPanel p = new JPanel(new BorderLayout());
+        p.setBorder(BorderFactory.createTitledBorder(title));
+        p.add(content, BorderLayout.CENTER);
+        return p;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+        if (src == chooseBtn) {
+            chooseAndDeserialize();
+        } else if (src == backBtn) {
+            dispose();  // close this window; ShowallPage remains
+        } else if (src == exitBtn) {
+            int ok = JOptionPane.showConfirmDialog(
+                    this, "Exit the application?", "Confirm Exit",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (ok == JOptionPane.YES_OPTION) System.exit(0);
+        }
+    }
+
+    private void chooseAndDeserialize() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Open Serialized Payroll (*.ser)");
+        chooser.setFileFilter(new FileNameExtensionFilter("Serialized Files (*.ser)", "ser"));
+
+        int result = chooser.showOpenDialog(this);
+        if (result != JFileChooser.APPROVE_OPTION) return;
+
+        File ser = chooser.getSelectedFile();
+        filePathLabel.setText("File: " + ser.getAbsolutePath());
+
+        try {
+            // Read raw bytes for center column
+            lastRaw = Files.readAllBytes(ser.toPath());
+            renderSerializedAgain(); // fill center area based on current mode
+
+            // Deserialize for right column
+            PayrollRowDTO after = Serialization.deserialize(ser, PayrollRowDTO.class);
+            afterArea.setText(formatDto(after));
+
+            // Optional: quick compare
+            if (beforeDto != null) {
+                boolean same = equalsDto(beforeDto, after);
+                String msg = same ? "BEFORE and AFTER are identical." : "BEFORE and AFTER differ.";
+                JOptionPane.showMessageDialog(this, msg, "Comparison", same
+                        ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to deserialize: " + ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Re-render center area based on selected view mode (Hex or Base64). */
+    private void renderSerializedAgain() {
+        if (lastRaw == null) {
+            serializedArea.setText("(No file chosen)");
+            return;
+        }
+        String mode = (String) viewMode.getSelectedItem();
+        if ("Base64".equals(mode)) {
+            serializedArea.setText(base64Block(lastRaw));
+        } else {
+            serializedArea.setText(hexDump(lastRaw));
+        }
+        serializedArea.setCaretPosition(0);
+    }
+
+    // ---------- Formatting helpers ----------
+
+    private String formatDto(PayrollRowDTO d) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employee Name : ").append(d.getEmployeeName()).append("\n");
+        sb.append("Month / Year  : ").append(d.getMonth()).append(" ").append(d.getYear()).append("\n");
+        sb.append("Hours         : ").append(d.getHoursWorked()).append("\n");
+        sb.append("Basic Salary  : ").append(d.getBasicSalary()).append("\n");
+        sb.append("Tax           : ").append(d.getTaxAmount()).append("\n");
+        sb.append("Gross Pay     : ").append(d.getGrossPay()).append("\n");
+        sb.append("Deduction     : ").append(d.getDeduction()).append("\n");
+        sb.append("Net Pay       : ").append(d.getNetPay()).append("\n");
+        return sb.toString();
+    }
+
+    /** Classic 16‑byte per line hex dump with offset and ASCII gutter. */
+    private String hexDump(byte[] data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Length: %d bytes\n", data.length));
+        // Detect Java Serialization Stream Magic (AC ED 00 05)
+        if (data.length >= 4 &&
+            (data[0] & 0xFF) == 0xAC && (data[1] & 0xFF) == 0xED &&
+            (data[2] & 0xFF) == 0x00 && (data[3] & 0xFF) == 0x05) {
+            sb.append("Header: Java Serialization Stream (AC ED 00 05)\n\n");
+        } else {
+            sb.append('\n');
+        }
+
+        for (int i = 0; i < data.length; i += 16) {
+            sb.append(String.format("%08X  ", i));
+            // hex bytes
+            for (int j = 0; j < 16; j++) {
+                if (i + j < data.length) sb.append(String.format("%02X ", data[i + j] & 0xFF));
+                else sb.append("   ");
+            }
+            sb.append(" ");
+            // ascii gutter
+            for (int j = 0; j < 16; j++) {
+                if (i + j < data.length) {
+                    int b = data[i + j] & 0xFF;
+                    char ch = (b >= 32 && b < 127) ? (char) b : '.';
+                    sb.append(ch);
+                }
+            }
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
+
+    /** Base64 with line wrapping at 76 chars for readability. */
+    private String base64Block(byte[] data) {
+        String raw = Base64.getEncoder().encodeToString(data);
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Length: %d bytes\n\n", data.length));
+        for (int i = 0; i < raw.length(); i += 76) {
+            sb.append(raw, i, Math.min(i + 76, raw.length())).append('\n');
+        }
+        return sb.toString();
+    }
+
+    // Field-by-field equality
+    private boolean equalsDto(PayrollRowDTO a, PayrollRowDTO b) {
+        if (a == null || b == null) return false;
+        if (!safe(a.getEmployeeName()).equals(safe(b.getEmployeeName()))) return false;
+        if (!safe(a.getMonth()).equals(safe(b.getMonth()))) return false;
+        if (!safe(a.getYear()).equals(safe(b.getYear()))) return false;
+        return Double.compare(a.getHoursWorked(), b.getHoursWorked()) == 0 &&
+                Double.compare(a.getBasicSalary(), b.getBasicSalary()) == 0 &&
+                Double.compare(a.getTaxAmount(),   b.getTaxAmount())   == 0 &&
+                Double.compare(a.getGrossPay(),    b.getGrossPay())    == 0 &&
+                Double.compare(a.getDeduction(),   b.getDeduction())   == 0 &&
+                Double.compare(a.getNetPay(),      b.getNetPay())      == 0;
+        }
+
+    private String safe(String s) { return s == null ? "" : s; }
 }
