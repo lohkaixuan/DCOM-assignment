@@ -83,6 +83,11 @@ class LoginPage extends JFrame implements ActionListener {
             String ic = icField.getText().trim();
             String password = passwordField.getText().trim();
 
+            if (ic.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter both IC number and password.");
+                return;
+            }
+
             try {
                 String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,
                         AppTheme.RMI_SERVICE);
