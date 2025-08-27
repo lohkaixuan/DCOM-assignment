@@ -22,9 +22,9 @@ public class AppTheme {
     public static final int FRAME_WIDTH = 600;
     public static final int FRAME_HEIGHT = 600;
     public static final int TEXTFIELD = 30;
-    //public static final String RMI_HOST = "192.168.100.26"; // Change to your
+    public static final String RMI_HOST = "192.168.100.26"; // Change to your
     // RMI server host
-    public static final String RMI_HOST = "localhost"; // Change to your RMI server host
+    //public static final String RMI_HOST = "localhost"; // Change to your RMI server host
     public static final int RMI_PORT = 1060; // Change to your RMI server port
     public static final String RMI_SERVICE = "sub"; // Change to your RMI service name
 
@@ -438,54 +438,41 @@ class ProfilePage extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == updateButton) {
-            String first = firstNameField.getText().trim();
-            String last = lastNameField.getText().trim();
-            String pass = passwordField.getText().trim();
-            String phone = phoneField.getText().trim();
+            String first = firstNameField.getText();
+            String last = lastNameField.getText();
+            String pass = passwordField.getText();
+            String phone = phoneField.getText();
 
-            if (first.isEmpty() || last.isEmpty() || pass.isEmpty() || phone.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill all fields.");
-                return;
-            }  
-            if (phone.length() != 10) {
-                JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits.");
-                return;
-            }
-                else{
+            if (!first.isEmpty() && !last.isEmpty() && !pass.isEmpty() && !phone.isEmpty()) {
+
                 try {
-                    int number = Integer.parseInt(phone);
-                    // String is a valid integer
-                } catch (NumberFormatException err) {
-                    err.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "Phone number must contain digits only.");
-                    return;
+                    String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,
+                            AppTheme.RMI_SERVICE);
+                    RMIinterface obj = (RMIinterface) Naming.lookup(url);
+                    Employee updatedEmployee = new Employee(
+                            Session.currentUser.getIC(), // Use the current user's IC
+                            pass, // Updated password
+                            first, // Updated first name
+                            last, // Updated last name
+                            Session.currentUser.getRole(), // Keep the same role
+                            phone // Updated phone number
+                    );
+                    Employee emp = obj.editEmployeeByIC(updatedEmployee);
+                    if (emp != null) {
+                        Session.currentUser = emp; // Store the user globally
+                        JOptionPane.showMessageDialog(this, "Profile updated successfully!");
+                        new MenuPage();
+                        dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Login failed.");
+                    }
+                } catch (RemoteException | NotBoundException | MalformedURLException ex) {
+                    ex.printStackTrace(); // Good for debugging
+                    JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
                 }
-            }
 
-            try {
-                String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,AppTheme.RMI_SERVICE);
-                RMIinterface obj = (RMIinterface) Naming.lookup(url);
-                Employee updatedEmployee = new Employee(
-                        Session.currentUser.getIC(), // Use the current user's IC
-                        pass, // Updated password
-                        first, // Updated first name
-                        last, // Updated last name
-                        Session.currentUser.getRole(), // Keep the same role
-                        phone // Updated phone number
-                );
-
-                Employee emp = obj.editEmployeeByIC(updatedEmployee);
-                if (emp != null) {
-                    Session.currentUser = emp; // Store the user globally
-                    JOptionPane.showMessageDialog(this, "Profile updated successfully!");
-                    new MenuPage();
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Login failed.");
-                }
-            } catch (RemoteException | NotBoundException | MalformedURLException ex) {
-                ex.printStackTrace(); // Good for debugging
-                JOptionPane.showMessageDialog(this, "Error connecting to server: " + ex.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(this, "Please fill all fields.");
             }
         } else if (e.getSource() == backButton) {
             new MenuPage(); // or whatever role/page you want to go back to
