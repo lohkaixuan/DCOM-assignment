@@ -448,7 +448,7 @@ class ProfilePage extends JFrame implements ActionListener {
             String pass = passwordField.getText().trim();
             String phone = phoneField.getText().trim();
 
-            if (first.isEmpty() && last.isEmpty() && pass.isEmpty() && phone.isEmpty()) {
+            if (first.isEmpty() || last.isEmpty() || pass.isEmpty() || phone.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill all fields.");
                 return;
             }
