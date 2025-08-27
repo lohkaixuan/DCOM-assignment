@@ -447,6 +447,7 @@ class ProfilePage extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please fill all fields.");
                 return;
             }  
+            //length and digit only check
             if (phone.length() != 10) {
                 JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits.");
                 return;
