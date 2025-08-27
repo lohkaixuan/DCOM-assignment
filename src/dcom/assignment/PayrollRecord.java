@@ -15,12 +15,13 @@ public class PayrollRecord implements Serializable {
 
     public PayrollRecord(String icNumber, double hoursWorked, double basicSalary, double taxAmount, String month, int year) {
         this.icNumber = icNumber;
-        this.hoursWorked = hoursWorked;
-        this.basicSalary = basicSalary;
-        this.taxAmount = taxAmount;
+        setHoursWorked(hoursWorked);
+        setBasicSalary(basicSalary);
+        setTaxAmount(taxAmount);
         this.month = month;
-        this.year = year;
+        setYear(year);
     }
+
     public PayrollRecord(String icNumber, double hoursWorked, double basicSalary, double taxAmount, String month, int year, double grossPay, double deduction, double netpay) {
         this.icNumber = icNumber;
         this.hoursWorked = hoursWorked;
@@ -45,11 +46,42 @@ public class PayrollRecord implements Serializable {
     public double getNetPayDB() { return netpay; }
 
     // Setters
-    public void setHoursWorked(double hoursWorked) { this.hoursWorked = hoursWorked; }
-    public void setBasicSalary(double basicSalary) { this.basicSalary = basicSalary; }
-    public void setTaxAmount(double taxAmount) { this.taxAmount = taxAmount; }
-    public void setMonth(String month) { this.month = month; }
-    public void setYear(int year) { this.year = year; }
+    public void setHoursWorked(double hoursWorked) { 
+        if (hoursWorked < 0) throw new IllegalArgumentException("Hours worked must be positive.");
+        this.hoursWorked = hoursWorked; 
+    }
+
+    public void setBasicSalary(double basicSalary) { 
+    if (basicSalary <= 0) throw new IllegalArgumentException("Basic salary must be greater than zero.");
+    this.basicSalary = basicSalary; 
+    }
+
+public void setTaxAmount(double taxAmount) { 
+    if (taxAmount < 0 || taxAmount > 1) {
+        throw new IllegalArgumentException("Tax rate must be between 0 and 1 (e.g., 0.14 for 14%).");
+    }
+    this.taxAmount = taxAmount;
+}
+
+public void setGrossPay(double grossPay) { 
+    if (grossPay <= 0) throw new IllegalArgumentException("Gross pay must be positive.");
+    this.grossPay = grossPay; 
+    }
+
+public void setDeduction(double deduction) { 
+    if (deduction < 0) throw new IllegalArgumentException("Deduction cannot be negative.");
+    this.deduction = deduction; 
+    }
+
+public void setNetPay(double netpay) { 
+    if (netpay < 0) throw new IllegalArgumentException("Net pay cannot be negative.");
+    this.netpay = netpay;
+}
+
+public void setYear(int year) {
+    if (year < 2000 || year > 2100) throw new IllegalArgumentException("Must be a valid year.");
+    this.year = year;
+}
 
     // Calculation Methods
     public double getGrossPay() {
