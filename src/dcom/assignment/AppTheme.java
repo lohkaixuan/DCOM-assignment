@@ -444,8 +444,16 @@ class ProfilePage extends JFrame implements ActionListener {
             String phone = phoneField.getText();
 
             if (!first.isEmpty() && !last.isEmpty() && !pass.isEmpty() && !phone.isEmpty()) {
-
-                try {
+                JOptionPane.showMessageDialog(this, "Please fill all fields.");
+                return;
+            }  
+            //length and digit only check
+            if (phone.length() != 10) {
+                JOptionPane.showMessageDialog(this, "Phone number must be exactly 10 digits.");
+                return;
+            }
+                else{
+                  try {
                     String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,
                             AppTheme.RMI_SERVICE);
                     RMIinterface obj = (RMIinterface) Naming.lookup(url);
