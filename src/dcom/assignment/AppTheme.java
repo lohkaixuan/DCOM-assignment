@@ -22,7 +22,7 @@ public class AppTheme {
     public static final int FRAME_WIDTH = 600;
     public static final int FRAME_HEIGHT = 600;
     public static final int TEXTFIELD = 30;
-    public static final String RMI_HOST = " 192.168.23.199"; // Change to your
+    public static final String RMI_HOST = "192.168.23.199"; // Change to your
     // RMI server host
     //public static final String RMI_HOST = "localhost"; // Change to your RMI server host
     public static final int RMI_PORT = 1060; // Change to your RMI server port
