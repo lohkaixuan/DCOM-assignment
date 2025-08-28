@@ -88,6 +88,15 @@ class LoginPage extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Please enter both IC number and password.");
                 return;
             }
+            else {
+                try {
+                    Integer.parseInt(ic);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "IC number must contain digits.");
+                    return;
+                }
+            }
+            
 
             try {
                 String url = String.format("rmi://%s:%d/%s", AppTheme.RMI_HOST, AppTheme.RMI_PORT,
