@@ -86,7 +86,9 @@ class LoginPage extends JFrame implements ActionListener {
             if (ic.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter both IC number and password.");
                 return;
-            } else {
+            } 
+            if (ic.length() != 12) {
+                JOptionPane.showMessageDialog(this, "IC number must be exactly 12 digits.");
                 try {
                     Integer.parseInt(ic);
                 } catch (NumberFormatException ex) {
